@@ -80,6 +80,12 @@
         </TableRow>
     </TableLayout>
 
+    <Button
+        android:id="@+id/btnStartStop"
+        android:layout_width="99dp"
+        android:layout_height="wrap_content"
+        android:text="Start" />
+
     <ImageView
         android:id="@+id/image"
         android:layout_width="wrap_content"
@@ -96,7 +102,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
-        android:id="@+id/pushup_count"
+        android:id="@+id/txtPushupCount"
         android:layout_width="fill_parent"
         android:layout_height="100dp"
         android:gravity="center"
@@ -108,13 +114,7 @@
         android:layout_height="wrap_content" >
 
         <Button
-            android:id="@+id/btnStartStop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Start" />
-
-        <Button
-            android:id="@+id/button1"
+            android:id="@+id/btnReset"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Reset" />
@@ -138,7 +138,7 @@
 
     <NumberPicker
         android:id="@+id/np"
-        android:layout_width="wrap_content"
+        android:layout_width="116dp"
         android:layout_height="wrap_content"
         android:layout_gravity="left"
         android:width="100dip" />

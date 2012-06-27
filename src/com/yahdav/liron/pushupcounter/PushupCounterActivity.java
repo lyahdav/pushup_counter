@@ -34,9 +34,9 @@ public class PushupCounterActivity extends Activity implements
 
 	private static final int SENSOR_DELAY = SensorManager.SENSOR_DELAY_GAME;
 	private static final float NOISE = (float) 2.0;
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 
-	private PushupState mPushupState = PushupState.STOPPED_BOTTOM;
+	private PushupState mPushupState = PushupState.STOPPED_TOP;
 	private int mPushupCount = 0;
 
 	private float mGravityX, mGravityY, mGravityZ;
@@ -93,16 +93,8 @@ public class PushupCounterActivity extends Activity implements
 		Button btnStartStop = (Button) findViewById(R.id.btnStartStop);
 		btnStartStop.setOnClickListener(this);
 
-		final Button btnReset = (Button) findViewById(R.id.button1);
-		btnReset.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				EditText etDebugInfo = (EditText) findViewById(R.id.etDebugInfo);
-				etDebugInfo.setText("");
-				TextView tvPushupCount = (TextView) findViewById(R.id.pushup_count);
-				tvPushupCount.setText("0");
-				mPushupCount = 0;
-			}
-		});
+		Button btnReset = (Button) findViewById(R.id.btnReset);
+		btnReset.setOnClickListener(this);
 
 		NumberPicker np = (NumberPicker) findViewById(R.id.np);
 		np.setMaxValue(100);
@@ -127,18 +119,20 @@ public class PushupCounterActivity extends Activity implements
 	}
 
 	public void onClick(View v) {
-		// btnStartStop click
+		if (v == findViewById(R.id.btnReset)) {
+			onBtnResetClick(v);
+		} else if (v == findViewById(R.id.btnStartStop)) {
+			Button btnStartStop = (Button) v;
 
-		Button btnStartStop = (Button) findViewById(R.id.btnStartStop);
-
-		if (isStarted) { // stopping
-			isStarted = false;
-			btnStartStop.setText("Start");
-			onBtnStop();
-		} else { // starting
-			isStarted = true;
-			btnStartStop.setText("Stop");
-			onBtnStart();
+			if (isStarted) { // stopping
+				isStarted = false;
+				btnStartStop.setText("Start");
+				onBtnStop();
+			} else { // starting
+				isStarted = true;
+				btnStartStop.setText("Stop");
+				onBtnStart();
+			}
 		}
 	}
 
@@ -154,8 +148,17 @@ public class PushupCounterActivity extends Activity implements
 	}
 
 	private void onBtnStop() {
+		onBtnResetClick(findViewById(R.id.btnReset));
 		mWakeLock.release();
 		mSensorManager.unregisterListener(this);
+	}
+
+	public void onBtnResetClick(View v) {
+		EditText etDebugInfo = (EditText) findViewById(R.id.etDebugInfo);
+		etDebugInfo.setText("");
+		TextView tvPushupCount = (TextView) findViewById(R.id.txtPushupCount);
+		tvPushupCount.setText("0");
+		mPushupCount = 0;
 	}
 
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -213,8 +216,8 @@ public class PushupCounterActivity extends Activity implements
 
 		debugLog(mPushupState.toString());
 
-		if (prevState == PushupState.MOVING_DOWN
-				&& newState == PushupState.STOPPED_BOTTOM) {
+		if (prevState == PushupState.MOVING_UP
+				&& newState == PushupState.STOPPED_TOP) {
 			incrementPushupCount();
 		}
 	}
@@ -231,13 +234,14 @@ public class PushupCounterActivity extends Activity implements
 		if (((CheckBox) findViewById(R.id.count_out_load)).isChecked()) {
 			mTts.speak(Integer.toString(mPushupCount),
 					TextToSpeech.QUEUE_FLUSH, null);
-			TextView tvPushupCount = (TextView) findViewById(R.id.pushup_count);
-			tvPushupCount.setText(Integer.toString(mPushupCount));
 		}
-		
-		NumberPicker np = (NumberPicker) findViewById(R.id.np); 
-		if(mPushupCount >= np.getValue()) {
-			if(isStarted) {
+
+		TextView tvPushupCount = (TextView) findViewById(R.id.txtPushupCount);
+		tvPushupCount.setText(Integer.toString(mPushupCount));
+
+		NumberPicker np = (NumberPicker) findViewById(R.id.np);
+		if (mPushupCount >= np.getValue()) {
+			if (isStarted) {
 				onClick(findViewById(R.id.btnStartStop));
 			}
 		}
